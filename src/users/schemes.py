@@ -16,4 +16,3 @@ class UserScheme(UserBaseScheme):
 
     class Config:
         orm_mode = True
-

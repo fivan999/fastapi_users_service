@@ -1,11 +1,12 @@
-from config import settings
+from src.config import settings
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.asyncio.session import async_sessionmaker
 
 
 engine = create_async_engine(
-    url=settings.POSTGRES_URL,
+    url=f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}'
+        f'@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}',
     echo=True,
 )
 Base = declarative_base()

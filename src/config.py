@@ -6,7 +6,11 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     JWT_SECRET_KEY: str
-    POSTGRES_URL: str
+    DB_NAME: str
+    DB_USER: str
+    DB_PASS: str
+    DB_HOST: str
+    DB_PORT: str
 
     model_config = SettingsConfigDict(
         env_file='.env',

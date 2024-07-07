@@ -12,7 +12,11 @@ from src.users.models import User
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, 'POSTGRES_URL', settings.POSTGRES_URL)
+config.set_section_option(section, 'DB_NAME', settings.DB_NAME)
+config.set_section_option(section, 'DB_USER', settings.DB_USER)
+config.set_section_option(section, 'DB_PASS', settings.DB_PASS)
+config.set_section_option(section, 'DB_HOST', settings.DB_HOST)
+config.set_section_option(section, 'DB_PORT', settings.DB_PORT)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
