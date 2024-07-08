@@ -6,6 +6,8 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     JWT_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_MINUTES: int
     DB_NAME: str
     DB_USER: str
     DB_PASS: str
