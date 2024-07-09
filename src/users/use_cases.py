@@ -1,8 +1,9 @@
 from src.users.repositories import UserRepository
-from src.users.schemes import UserCreateScheme, UserShowScheme, UserLoginScheme, AccessAndRefreshToken
+from src.users.schemes import UserCreateScheme, UserShowScheme, UserLoginScheme, AccessAndRefreshToken, UserFullScheme, AccessToken
 from src.users.utils.enums import UserEnum
 from src.users.utils.password import get_hashed_password, verify_password
-from src.users.utils.tokens import create_access_or_refresh_token
+from src.users.utils.tokens import create_access_or_refresh_token, get_validated_token_data
+from jwt import ExpiredSignatureError
 
 
 class UserUseCase:
@@ -40,5 +41,37 @@ class UserUseCase:
             refresh_token=create_access_or_refresh_token(
                 sub=token_sub, token_type='refresh_token'
             ),
-            token_type='Bearer',
         )
+
+    async def get_user_by_access_token(
+        self, token: str
+    ) -> tuple[UserEnum, UserFullScheme | None]:
+        token_status, payload = get_validated_token_data(token, 'access_token')
+        if token_status != UserEnum.TOKEN_IS_VALID:
+            return token_status, None
+        result_status, result_user = (
+            await self.user_repository.get_user_by_username_or_email(
+                payload.get('sub')
+            )
+        )
+        if result_status == UserEnum.USER_NOT_EXISTS:
+            return UserEnum.USER_NOT_EXISTS, None
+        return UserEnum.USER_EXISTS, UserFullScheme(**result_user.__dict__)
+
+    async def get_new_access_token_by_refresh_token(
+        self, token: str
+    ) -> tuple[UserEnum, AccessToken | None]:
+        token_status, payload = get_validated_token_data(token, 'refresh_token')
+        if token_status != UserEnum.TOKEN_IS_VALID:
+            return token_status, None
+        result_status, result_user = (
+            await self.user_repository.get_user_by_username_or_email(
+                payload.get('sub')
+            )
+        )
+        if result_status == UserEnum.USER_NOT_EXISTS:
+            return UserEnum.USER_NOT_EXISTS, None
+        access_token = create_access_or_refresh_token(
+            result_user.username, 'access_token'
+        )
+        return UserEnum.TOKEN_IS_VALID, AccessToken(access_token=access_token)

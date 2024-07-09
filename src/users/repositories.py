@@ -14,8 +14,11 @@ class UserRepository:
         self, user_data: UserCreateScheme
     ) -> tuple[UserEnum, UserShowScheme | None]:
         async with self.session.begin():
+            to_insert = user_data.__dict__
+            to_insert['hashed_password'] = user_data.password
+            del to_insert['password']
             user_create_query = insert(User).values(
-                **user_data.__dict__, hashed_password=user_data.password
+                **to_insert
             ).on_conflict_do_nothing().returning(User)
             new_user = await self.session.execute(user_create_query)
             new_user = new_user.scalar()

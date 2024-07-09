@@ -32,7 +32,6 @@ class UserLoginScheme(BaseModel):
 
 class AccessToken(BaseModel):
     access_token: str
-    token_type: str
 
 
 class AccessAndRefreshToken(AccessToken):

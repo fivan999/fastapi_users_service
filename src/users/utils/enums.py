@@ -9,3 +9,6 @@ class UserEnum(Enum):
     USER_NOT_EXISTS = 'user not exists'
     USER_IS_NOT_ACTIVE = 'user is not active'
     SUCCESS_LOGIN = 'success login'
+    INVALID_TOKEN = 'invalid token'
+    TOKEN_EXPIRED = 'token expired'
+    TOKEN_IS_VALID = 'token is valid'
