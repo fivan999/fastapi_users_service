@@ -4,9 +4,9 @@ from sqlalchemy import or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.users.models import User
-from src.users.schemes import UserCreateScheme, UserFullScheme, UserShowScheme
-from src.users.utils.enums import UserEnum
+from src.models.users import User
+from src.schemes.users import UserCreateScheme, UserFullScheme, UserShowScheme
+from src.utils.enums import UserEnum
 
 
 class UserRepository:

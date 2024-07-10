@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from src.users.routes import user_router
+from src.routes.users import user_router
 
 
 @asynccontextmanager
@@ -13,8 +13,13 @@ async def lifespan_events(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan_events)
-app.include_router(user_router)
+def create_app() -> FastAPI:
+    app = FastAPI(lifespan=lifespan_events)
+    app.include_router(user_router)
+    return app
+
+
+app = create_app()
 
 
 @app.exception_handler(RequestValidationError)

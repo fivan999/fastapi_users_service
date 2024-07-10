@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 
 from src.db.dependencies import DatabaseDep
-from src.users.repositories import UserRepository
-from src.users.schemes import UserFullScheme
-from src.users.use_cases import UserUseCase
-from src.users.utils.enums import UserEnum
-from src.users.utils.tokens import JWTTokenDep
+from src.dependencies.tokens import JWTTokenDep
+from src.repositories.users import UserRepository
+from src.schemes.users import UserFullScheme
+from src.use_cases.users import UserUseCase
+from src.utils.enums import UserEnum
 
 
 async def get_user_repository(db: DatabaseDep) -> UserRepository:

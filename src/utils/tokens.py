@@ -7,7 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import ExpiredSignatureError
 
 from src.config import settings
-from src.users.utils.enums import UserEnum
+from src.utils.enums import UserEnum
 
 
 def create_access_or_refresh_token(sub: str, token_type: str) -> str:
@@ -54,6 +54,3 @@ def get_jwt_bearer_token(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]
 ) -> str:
     return credentials.credentials
-
-
-JWTTokenDep = Annotated[str, Depends(get_jwt_bearer_token)]

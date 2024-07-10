@@ -1,16 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
 
-from src.users.dependencies import CurrentUserDep, UserUseCaseDep
-from src.users.schemes import (
-    AccessAndRefreshToken,
-    AccessToken,
-    PasswordChangeScheme,
-    UserCreateScheme,
-    UserLoginScheme,
-    UserShowScheme
-)
-from src.users.utils.enums import UserEnum
-from src.users.utils.tokens import JWTTokenDep
+from src.dependencies.tokens import JWTTokenDep
+from src.dependencies.users import CurrentUserDep, UserUseCaseDep
+from src.schemes.password import PasswordChangeScheme
+from src.schemes.tokens import AccessAndRefreshToken, AccessToken
+from src.schemes.users import UserCreateScheme, UserLoginScheme, UserShowScheme
+from src.utils.enums import UserEnum
 
 
 user_router = APIRouter(prefix='/users', tags=['Users'])
@@ -66,6 +61,21 @@ async def get_new_access_token(
 @user_router.get('/me', status_code=status.HTTP_200_OK)
 async def get_user_profile(current_user: CurrentUserDep) -> UserShowScheme:
     return current_user
+
+
+@user_router.get('/{username}', status_code=status.HTTP_200_OK)
+async def get_user_by_username(
+    username: str, user_use_case: UserUseCaseDep
+) -> UserShowScheme:
+    result_status, result_user = (
+        await user_use_case.get_user_by_username_or_email(username)
+    )
+    if result_status != UserEnum.USER_EXISTS:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=UserEnum.USER_NOT_EXISTS.value,
+        )
+    return result_user
 
 
 @user_router.post('/password/change', status_code=status.HTTP_200_OK)

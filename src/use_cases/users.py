@@ -1,16 +1,15 @@
-from src.users.repositories import UserRepository
-from src.users.schemes import (
-    AccessAndRefreshToken,
-    AccessToken,
-    PasswordChangeScheme,
+from src.repositories.users import UserRepository
+from src.schemes.password import PasswordChangeScheme
+from src.schemes.tokens import AccessAndRefreshToken, AccessToken
+from src.schemes.users import (
     UserCreateScheme,
     UserFullScheme,
     UserLoginScheme,
     UserShowScheme
 )
-from src.users.utils.enums import UserEnum
-from src.users.utils.password import get_hashed_password, verify_password
-from src.users.utils.tokens import (
+from src.utils.enums import UserEnum
+from src.utils.password import get_hashed_password, verify_password
+from src.utils.tokens import (
     create_access_or_refresh_token,
     get_validated_token_data
 )
@@ -26,18 +25,28 @@ class UserUseCase:
         user_data.password = get_hashed_password(user_data.password)
         return await self.user_repository.create_user(user_data)
 
-    async def get_access_and_refresh_token(
-        self, user_data: UserLoginScheme
-    ) -> tuple[UserEnum, AccessAndRefreshToken | None]:
+    async def get_user_by_username_or_email(
+        self, login: str
+    ) -> tuple[UserEnum, UserFullScheme]:
         user_get_status, user_result_data = (
-            await self.user_repository.get_user_by_username_or_email(
-                user_data.login
-            )
+            await self.user_repository.get_user_by_username_or_email(login)
         )
         if user_get_status == UserEnum.USER_NOT_EXISTS:
             return UserEnum.USER_NOT_EXISTS, None
         if not user_result_data.is_active:
             return UserEnum.USER_IS_NOT_ACTIVE, None
+        return UserEnum.USER_EXISTS, UserFullScheme(
+            **user_result_data.__dict__
+        )
+
+    async def get_access_and_refresh_token(
+        self, user_data: UserLoginScheme
+    ) -> tuple[UserEnum, AccessAndRefreshToken | None]:
+        user_get_status, user_result_data = (
+            await self.get_user_by_username_or_email(user_data.login)
+        )
+        if user_get_status != UserEnum.USER_EXISTS:
+            return user_get_status, None
         if not verify_password(
             user_data.password, user_result_data.hashed_password
         ):
