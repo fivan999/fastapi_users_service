@@ -1,7 +1,8 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Annotated
-from fastapi import Depends
 from functools import lru_cache
+from typing import Annotated
+
+from fastapi import Depends
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):

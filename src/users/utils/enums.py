@@ -12,3 +12,4 @@ class UserEnum(Enum):
     INVALID_TOKEN = 'invalid token'
     TOKEN_EXPIRED = 'token expired'
     TOKEN_IS_VALID = 'token is valid'
+    PASSWORD_CHANGED = 'password changed'

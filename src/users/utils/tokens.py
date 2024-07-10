@@ -1,36 +1,34 @@
 import datetime
-from src.config import settings
-import jwt
-from src.users.utils.enums import UserEnum
-from jwt import ExpiredSignatureError
-from fastapi import Depends
 from typing import Annotated
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+import jwt
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jwt import ExpiredSignatureError
+
+from src.config import settings
+from src.users.utils.enums import UserEnum
 
 
 def create_access_or_refresh_token(sub: str, token_type: str) -> str:
-    data_to_encode = {
-        'sub': sub, 'token_type': token_type
-    }
-    expires_time = datetime.datetime.now(datetime.timezone.utc)
+    data_to_encode = {'sub': sub, 'token_type': token_type}
+    creation_time = datetime.datetime.now(datetime.timezone.utc)
+    data_to_encode['iat'] = creation_time
     if token_type == 'access_token':
-        expires_time += datetime.timedelta(
+        data_to_encode['exp'] = creation_time + datetime.timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
     elif token_type == 'refresh_token':
-        expires_time += datetime.timedelta(
+        data_to_encode['exp'] = creation_time + datetime.timedelta(
             minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
         )
-    data_to_encode['exp'] = expires_time
     return jwt.encode(
         data_to_encode, settings.JWT_SECRET_KEY, algorithm='HS256'
     )
 
 
 def decode_jwt_token(token: str) -> dict:
-    payload = jwt.decode(
-        token, settings.JWT_SECRET_KEY, algorithms=['HS256']
-    )
+    payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
     return payload
 
 
@@ -44,7 +42,8 @@ def get_validated_token_data(
     username = payload.get('sub')
     token_type = payload.get('token_type')
     if (
-        username is None or token_type is None
+        username is None
+        or token_type is None
         or token_type != expected_token_type
     ):
         return UserEnum.INVALID_TOKEN, None

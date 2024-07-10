@@ -1,4 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String
+import datetime
+
+from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String
+
 from src.db.base import Base
 
 
@@ -9,4 +12,8 @@ class User(Base):
     username = Column(String, unique=True)
     email = Column(String, unique=True)
     hashed_password = Column(String)
+    password_updated_at = Column(
+        type_=TIMESTAMP(timezone=True),
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+    )
     is_active = Column(Boolean, default=True)
