@@ -9,12 +9,42 @@ extend-exclude='''
   | migrations
 )
 '''
+
 [tool.isort]
 default_section = "THIRDPARTY" 
 known_local_folder = ["db", "users"]
-sections = ["FUTURE","STDLIB","THIRDPARTY","DJANGO","FIRSTPARTY","LOCALFOLDER"] 
+sections = ["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"] 
 skip = [".gitignore", "venv", "env"] 
 skip_glob = ["*/migrations/*"] 
 multi_line_output = 3
 line_length = 79
 lines_after_imports = 2
+
+[tool.poetry]
+name = "fastapi-app"
+version = "0.1.0"
+description = ""
+authors = ["bebra_dev"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.1"
+sqlalchemy = "^2.0.31"
+psycopg2-binary = "^2.9.9"
+alembic = "^1.13.2"
+pydantic-settings = "^2.3.4"
+asyncpg = "^0.29.0"
+pyjwt = "^2.8.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

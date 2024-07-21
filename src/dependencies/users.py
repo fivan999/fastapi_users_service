@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from src.db.dependencies import DatabaseDep
+from src.dependencies.db import DatabaseDep
 from src.dependencies.tokens import JWTTokenDep
 from src.repositories.users import UserRepository
 from src.schemes.users import UserFullScheme
