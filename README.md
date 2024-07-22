@@ -5,7 +5,7 @@
 git clone https://github.com/fivan999/fastapi_users_service
 ```
 ### Конфигурация
-Создайте .env файл в корне проекта<br>
+Создайте .env файл в корне проекта (пример .env файла - .env.example) <br>
 В нем нужно указать значения:<br>
 - JWT_SECRET_KEY (секретный ключ для генерации jwt токена)<br>
 - DB_NAME (имя базы данных)
