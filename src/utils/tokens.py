@@ -4,7 +4,7 @@ from typing import Annotated
 import jwt
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jwt import ExpiredSignatureError, InvalidSignatureError
+from jwt import ExpiredSignatureError, PyJWTError
 
 from src.config import settings
 from src.utils.enums import UserEnum
@@ -39,7 +39,7 @@ def get_validated_token_data(
         payload = decode_jwt_token(token)
     except ExpiredSignatureError:
         return UserEnum.TOKEN_EXPIRED, None
-    except InvalidSignatureError:
+    except PyJWTError:
         return UserEnum.INVALID_TOKEN, None
     username = payload.get('sub')
     token_type = payload.get('token_type')

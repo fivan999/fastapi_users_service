@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
 
-from src.dependencies.tokens import JWTTokenDep
+from fastapi import APIRouter, Body, HTTPException, status
+
 from src.dependencies.users import CurrentUserDep, UserUseCaseDep
 from src.schemes.password import PasswordChangeScheme
 from src.schemes.tokens import AccessAndRefreshToken, AccessToken
@@ -41,9 +42,10 @@ async def user_login(
     return result_data
 
 
-@user_router.get('/refresh', status_code=status.HTTP_200_OK)
+@user_router.post('/refresh', status_code=status.HTTP_200_OK)
 async def get_new_access_token(
-    refresh_token: JWTTokenDep, user_use_case: UserUseCaseDep
+    refresh_token: Annotated[str, Body(embed=True)],
+    user_use_case: UserUseCaseDep,
 ) -> AccessToken:
     result_status, token = (
         await user_use_case.get_new_access_token_by_refresh_token(
@@ -52,7 +54,7 @@ async def get_new_access_token(
     )
     if result_status != UserEnum.TOKEN_IS_VALID:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail=result_status.value,
         )
     return token
