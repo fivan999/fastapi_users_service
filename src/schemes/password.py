@@ -8,9 +8,21 @@ class PasswordScheme(BaseModel):
     @field_validator('password')
     @classmethod
     def validate_password(cls, value: str) -> str:
+        """
+        Validating a password
+
+        Args:
+            value (str): password
+
+        Raises:
+            HTTPException: password is invalid
+
+        Returns:
+            str: validated password
+        """
         if len(value) < 8:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='password should be at least 8 symbols long',
             )
         return value

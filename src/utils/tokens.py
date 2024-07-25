@@ -11,6 +11,16 @@ from src.utils.enums import UserEnum
 
 
 def create_access_or_refresh_token(sub: str, token_type: str) -> str:
+    """
+    Creating a jwt token with
+
+    Args:
+        sub (str): useful data
+        token_type (str): type of a token (access or refresh)
+
+    Returns:
+        str: jwt token
+    """
     data_to_encode = {'sub': sub, 'token_type': token_type}
     creation_time = datetime.datetime.now(datetime.timezone.utc)
     data_to_encode['iat'] = creation_time
@@ -28,6 +38,15 @@ def create_access_or_refresh_token(sub: str, token_type: str) -> str:
 
 
 def decode_jwt_token(token: str) -> dict:
+    """
+    Getting payload of a jwt token
+
+    Args:
+        token (str): jwt token
+
+    Returns:
+        dict: payload
+    """
     payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
     return payload
 
@@ -35,6 +54,16 @@ def decode_jwt_token(token: str) -> dict:
 def get_validated_token_data(
     token: str, expected_token_type: str
 ) -> tuple[UserEnum, dict | None]:
+    """
+    Validate jwt token and get payload
+
+    Args:
+        token (str): jwt token
+        expected_token_type (str): type of a token (access or refresh)
+
+    Returns:
+        tuple[UserEnum, dict | None]: Enum with status and payload
+    """
     try:
         payload = decode_jwt_token(token)
     except ExpiredSignatureError:
@@ -55,4 +84,13 @@ def get_validated_token_data(
 def get_jwt_bearer_token(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]
 ) -> str:
+    """
+    Getting jwt token from Authorization header
+
+    Args:
+        credentials (Annotated[HTTPAuthorizationCredentials, Depends)
+
+    Returns:
+        str: jwt token
+    """
     return credentials.credentials

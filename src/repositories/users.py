@@ -11,11 +11,28 @@ from src.utils.enums import UserEnum
 
 class UserRepository:
     def __init__(self, session: AsyncSession) -> None:
+        """
+        Initializing of user repository
+
+        Args:
+            session (AsyncSession): async db session
+        """
         self.session = session
 
     async def create_user(
         self, user_data: UserCreateScheme
     ) -> tuple[UserEnum, UserShowScheme | None]:
+        """
+        Creating a user with user's data
+
+        Args:
+            user_data (UserCreateScheme): scheme with user's data
+
+        Returns:
+            tuple[
+                UserEnum, UserShowScheme | None
+            ]: enum with state and user's data
+        """
         async with self.session.begin():
             to_insert = user_data.__dict__
             to_insert['hashed_password'] = user_data.password
@@ -36,6 +53,17 @@ class UserRepository:
     async def get_user_by_username_or_email(
         self, login: str
     ) -> tuple[UserEnum, UserFullScheme | None]:
+        """
+        Getting user data by username or email
+
+        Args:
+            login (str): email or username of a user
+
+        Returns:
+            tuple[
+                UserEnum, UserFullScheme | None
+            ]: enum with state and user's data
+        """
         user_get_query = select(User).where(
             or_(User.username == login, User.email == login)
         )
@@ -48,6 +76,16 @@ class UserRepository:
     async def update_user_password(
         self, username: str, new_password: str
     ) -> UserEnum:
+        """
+        Update user's password
+
+        Args:
+            username (str)
+            new_password (str)
+
+        Returns:
+            UserEnum: status of updating password
+        """
         password_update_query = (
             update(User)
             .where(User.username == username)

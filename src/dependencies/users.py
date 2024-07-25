@@ -27,6 +27,19 @@ UserUseCaseDep = Annotated[UserUseCase, Depends(get_user_use_case)]
 async def get_current_user_by_access_token(
     token: JWTTokenDep, user_use_case: UserUseCaseDep
 ) -> UserFullScheme:
+    """
+    Getting user's data from jwt token
+
+    Args:
+        token (JWTTokenDep): jwt token
+        user_use_case (UserUseCaseDep): user's use case
+
+    Raises:
+        HTTPException: user does not exists
+
+    Returns:
+        UserFullScheme: scheme with user's data
+    """
     result_status, result_user = await user_use_case.get_user_by_token(
         token, 'access_token'
     )
