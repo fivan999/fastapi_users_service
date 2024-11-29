@@ -26,11 +26,11 @@ def create_access_or_refresh_token(sub: str, token_type: str) -> str:
     data_to_encode['iat'] = creation_time
     if token_type == 'access_token':
         data_to_encode['exp'] = creation_time + datetime.timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            seconds=settings.ACCESS_TOKEN_EXPIRE_SECONDS
         )
     elif token_type == 'refresh_token':
         data_to_encode['exp'] = creation_time + datetime.timedelta(
-            minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
+            seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS
         )
     return jwt.encode(
         data_to_encode, settings.JWT_SECRET_KEY, algorithm='HS256'
