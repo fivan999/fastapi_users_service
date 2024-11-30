@@ -1,3 +1,5 @@
+import datetime
+
 from src.repositories.users import UserRepository
 from src.schemes.password import PasswordChangeScheme
 from src.schemes.tokens import AccessAndRefreshToken, AccessToken
@@ -118,7 +120,7 @@ class UserUseCase:
         )
         if result_status == UserEnum.USER_NOT_EXISTS:
             return UserEnum.USER_NOT_EXISTS, None
-        if payload.get('iat') < result_user.password_updated_at.timestamp():
+        if payload.get('iat') < (result_user.password_updated_at - datetime.timedelta(seconds=1)).timestamp():
             return UserEnum.PASSWORD_CHANGED, None
         return UserEnum.USER_EXISTS, UserFullScheme(**result_user.__dict__)
 
