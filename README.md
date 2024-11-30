@@ -13,8 +13,8 @@ git clone https://github.com/fivan999/fastapi_users_service
 - DB_USER (имя пользователя базы данных)
 - DB_PASS (пароль базы данных, по умолчанию - password)
 - DB_PORT (порт базы данных)
-- ACCESS_TOKEN_EXPIRE_MINUTES (время валидности access токена в минутах)
-- REFRESH_TOKEN_EXPIRE_MINUTES (время валидности refresh токена в минутах)
+- ACCESS_TOKEN_EXPIRE_SECONDS (время валидности access токена в секундах)
+- REFRESH_TOKEN_EXPIRE_SECONDS (время валидности refresh токена в секундах)
 ### Установить Docker и запустить его
 Установить Docker можно по ссылке: https://docs.docker.com/get-docker/
 ### Запустить проект
