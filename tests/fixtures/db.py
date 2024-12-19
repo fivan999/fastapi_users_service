@@ -49,10 +49,7 @@ def db_session(
     db_sessionmaker: sessionmaker,
 ) -> Generator[Session, None, None]:
     session = db_sessionmaker()
-    try:
-        yield session
-    finally:
-        clear_db_tables(db_sessionmaker)
+    yield session
 
 
 @pytest.fixture(scope='function')

@@ -14,6 +14,7 @@ class User(Base):
     hashed_password = Column(String)
     password_updated_at = Column(
         type_=TIMESTAMP(timezone=True),
-        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        default=lambda: datetime.datetime.now(datetime.timezone.utc)
+        - datetime.timedelta(minutes=10),
     )
     is_active = Column(Boolean, default=True)

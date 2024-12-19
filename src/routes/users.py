@@ -94,28 +94,6 @@ async def get_user_profile(current_user: CurrentUserDep) -> UserShowScheme:
     return current_user
 
 
-@user_router.get(
-    '/{username}',
-    status_code=status.HTTP_200_OK,
-    responses={
-        200: {'description': 'User data'},
-        404: {'description': 'User not found', 'model': ErrorScheme},
-    },
-)
-async def get_user_by_username(
-    username: str, user_use_case: UserUseCaseDep
-) -> UserShowScheme:
-    result_status, result_user = (
-        await user_use_case.get_user_by_username_or_email(username)
-    )
-    if result_status != UserEnum.USER_EXISTS:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=UserEnum.USER_NOT_EXISTS.value,
-        )
-    return result_user
-
-
 @user_router.post(
     '/password/change',
     status_code=status.HTTP_200_OK,

@@ -123,3 +123,41 @@ async def test_get_access_token_by_expired_refresh_token(
     response_json = response.json()
     assert response.status_code == 403
     assert 'access_token' not in response_json
+
+
+@pytest.mark.asyncio
+async def test_login_after_password_change(
+    fastapi_test_client: AsyncClient, access_and_refresh_token1: User
+) -> None:
+    access_token = access_and_refresh_token1.get('access_token', 'fake')
+    response = await fastapi_test_client.post(
+        url='/users/password/change',
+        headers={'Authorization': f'Bearer {access_token}'},
+        json={'old_password': 'Paassword1', 'password': 'Paassword2'},
+    )
+    response = await fastapi_test_client.post(
+        url='/users/login',
+        json={'login': 'user1', 'password': 'Paassword2'},
+    )
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_authorize_with_same_access_token_after_password_change(
+    fastapi_test_client: AsyncClient, access_and_refresh_token1: User
+) -> None:
+    access_token = access_and_refresh_token1.get('access_token', 'fake')
+    with freezegun.freeze_time(
+        datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(seconds=2)
+    ):
+        await fastapi_test_client.post(
+            url='/users/password/change',
+            headers={'Authorization': f'Bearer {access_token}'},
+            json={'old_password': 'Paassword1', 'password': 'Paassword2'},
+        )
+    response = await fastapi_test_client.get(
+        url='/users/me',
+        headers={'Authorization': f'Bearer {access_token}'},
+    )
+    assert response.status_code == 401
