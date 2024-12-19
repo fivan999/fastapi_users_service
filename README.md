@@ -8,16 +8,26 @@ git clone https://github.com/fivan999/fastapi_users_service
 Создайте .env файл в корне проекта (пример .env файла - .env.example) <br>
 В нем нужно указать значения:<br>
 - JWT_SECRET_KEY (секретный ключ для генерации jwt токена)<br>
-- DB_NAME (имя базы данных)
-- DB_HOST (хост базы данных)
-- DB_USER (имя пользователя базы данных)
-- DB_PASS (пароль базы данных, по умолчанию - password)
-- DB_PORT (порт базы данных)
+- POSTGRES_DB (имя базы данных)
+- POSTGRES_HOST (хост базы данных)
+- POSTGRES_USER (имя пользователя базы данных)
+- POSTGRES_PASSWORD (пароль базы данных, по умолчанию - password)
+- POSTGRES_PORT (порт базы данных)
 - ACCESS_TOKEN_EXPIRE_SECONDS (время валидности access токена в секундах)
 - REFRESH_TOKEN_EXPIRE_SECONDS (время валидности refresh токена в секундах)
-### Установить Docker и запустить его
-Установить Docker можно по ссылке: https://docs.docker.com/get-docker/
+### Для разработки
+1. Установить [Python 3.12](https://www.python.org/downloads/)
+2. Установить [Poetry](https://python-poetry.org/docs/)
+3. Install project dependencies with [Poetry](https://python-poetry.org/docs/cli/#options-2).
+   ```bash
+   poetry install
+   ```
+4. Установить [pre-commit](https://pre-commit.com/) хуки:
+
+   ```bash
+   poetry run pre-commit install --install-hooks -t pre-commit -t commit-msg
+   ```
 ### Запустить проект
-```
-docker compose up --build
+```bash
+docker compose up
 ```
