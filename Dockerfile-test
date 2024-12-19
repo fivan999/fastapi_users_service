@@ -28,19 +28,19 @@ RUN curl -sS https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} pyth
     chmod a+x /opt/poetry/bin/poetry
 
 # We copy our Python requirements here to cache them
-# and install only runtime deps using poetry
+# and install runtime + test deps using poetry
 WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --with test
 
 
 ###########################################################
-# Production stage. Copy only runtime deps that were installed in the Builder stage.
+# Production stage. Copy runtime + test deps that were installed in the Builder stage.
 FROM base AS production
 
 COPY --from=builder $VENV_PATH $VENV_PATH
 
-COPY --chmod=755 entrypoint.sh /
+COPY --chmod=755 ../entrypoint.sh /
 
 # Create user with the name poetry
 RUN addgroup -g 1500 poetry && \

@@ -15,8 +15,8 @@ async def init_database() -> async_sessionmaker:
         async_sessionmaker: session factory
     """
     engine = create_async_engine(
-        url=f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASS}'
-        f'@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}',
+        url=f'postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}'
+        f'@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}',
         echo=True,
     )
     return async_sessionmaker(engine, expire_on_commit=False)

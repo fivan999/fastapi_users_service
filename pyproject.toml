@@ -6,20 +6,24 @@ extend-exclude='''
     \.git
   | \.mypy_cache
   | \.venv
-  | migrations
+  | postgres_data/
 )
 '''
 
 [tool.isort]
 default_section = "THIRDPARTY" 
-known_local_folder = ["db", "users"]
+known_local_folder = ["src", "db", "dependencies", "models", "repositories", "routes", "schemes", "use_cases", "utils", "tests"]
 sections = ["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"] 
 skip = [".gitignore", "venv", "env"] 
-skip_glob = ["*/migrations/*"] 
 multi_line_output = 3
 line_length = 79
 lines_after_imports = 2
 include_trailing_comma = true
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
 
 [tool.poetry]
 name = "fastapi-app"
@@ -38,6 +42,15 @@ pydantic-settings = "^2.3.4"
 asyncpg = "^0.29.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+pytest-asyncio = "^0.25.0"
+freezegun = "^1.5.1"
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev]
 optional = true

@@ -1,0 +1,26 @@
+# Pre-commit configuration.
+# https://pre-commit.com
+
+# pre-commit install
+# pre-commit run --all-files
+
+# Automatically update hooks: pre-commit autoupdate
+
+default_stages:
+  - pre-commit
+  - pre-push
+  - commit-msg
+  - manual
+
+repos:
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+    - id: isort
+      args: [--check, --settings-path, pyproject.toml]
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+    - id: black
+      args: [--check, --config=pyproject.toml]

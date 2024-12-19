@@ -1,24 +1,25 @@
 services:
   fastapi_app:
     build: 
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile-test
     container_name: fastapi_app
-    command: sh -c "uvicorn src.main:app --reload --port=8000 --host=0.0.0.0"
-    env_file:
-      - .env
-    ports:
-      - '8000:8000'
+    command: sh -c "pytest tests/ && exit"
     depends_on:
       database:
        condition: service_healthy
+    environment:
+      - JWT_SECRET_KEY=jwt_secret
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - ACCESS_TOKEN_EXPIRE_SECONDS=900
+      - REFRESH_TOKEN_EXPIRE_SECONDS=2592000
 
   database:
     image: postgres:16-alpine3.19
     container_name: postgres
-    env_file:
-      - .env
-    volumes:
-      - './postgres_data:/var/lib/postgresql/data'
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]

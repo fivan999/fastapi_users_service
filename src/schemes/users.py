@@ -1,7 +1,6 @@
 import datetime
 import re
 
-from fastapi import HTTPException, status
 from pydantic import BaseModel, EmailStr, field_validator
 
 from src.schemes.password import PasswordScheme
@@ -29,14 +28,12 @@ class UserCreateScheme(UserBaseScheme, PasswordScheme):
             str: validated username
         """
         if not 5 <= len(value) <= 30:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='username must be 5 to 30 symbols length',
+            raise ValueError(
+                'username must be 5 to 30 symbols length',
             )
         if not re.fullmatch(r'^[a-zA-Z0-9_]+$', value):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='username must consist only of english '
+            raise ValueError(
+                'username must consist only of english '
                 'letters, digits and _ sign',
             )
         return value
@@ -47,7 +44,7 @@ class UserShowScheme(UserBaseScheme):
     is_active: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserFullScheme(UserShowScheme):
@@ -55,7 +52,7 @@ class UserFullScheme(UserShowScheme):
     password_updated_at: datetime.datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserLoginScheme(BaseModel):

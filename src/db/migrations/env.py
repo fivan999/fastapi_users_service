@@ -1,22 +1,24 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from src.config import settings
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+
+from src.config import settings
 from src.models.users import User
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, 'DB_NAME', settings.DB_NAME)
-config.set_section_option(section, 'DB_USER', settings.DB_USER)
-config.set_section_option(section, 'DB_PASS', settings.DB_PASS)
-config.set_section_option(section, 'DB_HOST', settings.DB_HOST)
-config.set_section_option(section, 'DB_PORT', settings.DB_PORT)
+config.set_section_option(section, 'POSTGRES_DB', settings.POSTGRES_DB)
+config.set_section_option(section, 'POSTGRES_USER', settings.POSTGRES_USER)
+config.set_section_option(
+    section, 'POSTGRES_PASSWORD', settings.POSTGRES_PASSWORD
+)
+config.set_section_option(section, 'POSTGRES_HOST', settings.POSTGRES_HOST)
+config.set_section_option(section, 'POSTGRES_PORT', settings.POSTGRES_PORT)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

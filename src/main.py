@@ -74,17 +74,10 @@ app = create_app()
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    """
-    Handling RequestValidationError
-
-    Args:
-        request (Request): fastapi Request object
-        exc (RequestValidationError): exception
-
-    Returns:
-        JSONResponse
-    """
+    content = {}
+    for item in exc.errors():
+        content[item["loc"][1]] = item["msg"]
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content=jsonable_encoder({"detail": exc.errors()[0]['msg']}),
+        content=jsonable_encoder(content),
     )

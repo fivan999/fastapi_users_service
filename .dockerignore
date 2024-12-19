@@ -1,3 +1,13 @@
 venv/
 __pycache__/
 .env.example
+Dockerfile
+Dockerfile-test
+docker-compose.yml
+docker-compose-test.yml
+.pre-commit-config.yaml
+.gitignore
+.env
+README.md
+.github/
+.pytest_cache/

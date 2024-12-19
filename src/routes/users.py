@@ -40,7 +40,7 @@ async def user_create(
     status_code=status.HTTP_200_OK,
     responses={
         200: {'description': 'Refresh and access token'},
-        403: {'description': 'Invalid user data', 'model': ErrorScheme},
+        401: {'description': 'Invalid user data', 'model': ErrorScheme},
     },
 )
 async def user_login(
@@ -51,7 +51,7 @@ async def user_login(
     )
     if result_status != UserEnum.SUCCESS_LOGIN:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=result_status.value,
         )
     return result_data
