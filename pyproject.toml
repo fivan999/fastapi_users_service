@@ -33,7 +33,7 @@ authors = ["bebra_dev"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 fastapi = "^0.115.6"
 sqlalchemy = "^2.0.31"
 psycopg2-binary = "^2.9.9"
