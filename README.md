@@ -18,9 +18,9 @@ git clone https://github.com/fivan999/fastapi_users_service
 ### Для разработки
 1. Установить [Python 3.12](https://www.python.org/downloads/)
 2. Установить [Poetry](https://python-poetry.org/docs/)
-3. Install project dependencies with [Poetry](https://python-poetry.org/docs/cli/#options-2).
+3. Установить зависимости через Poetry
    ```bash
-   poetry install
+   poetry install --with dev --with test
    ```
 4. Установить [pre-commit](https://pre-commit.com/) хуки:
 
@@ -30,4 +30,8 @@ git clone https://github.com/fivan999/fastapi_users_service
 ### Запустить проект
 ```bash
 docker compose up
+```
+### Запуск тестов
+```bash
+docker compose -f docker-compose-test.yml up
 ```
