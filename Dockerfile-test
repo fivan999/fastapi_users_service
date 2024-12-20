@@ -1,6 +1,6 @@
 ###########################################################
 # Base Python image. Set shared environment variables.
-FROM python:3.12-alpine AS base
+FROM python:3.13-alpine AS base
 ENV PYTHONUNBUFFERED=1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
