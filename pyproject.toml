@@ -38,7 +38,7 @@ fastapi = "^0.115.6"
 sqlalchemy = "^2.0.31"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.13.2"
-pydantic-settings = "^2.3.4"
+pydantic-settings = "^2.7.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
