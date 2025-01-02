@@ -38,7 +38,7 @@ fastapi = "^0.115.6"
 sqlalchemy = "^2.0.31"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.13.2"
-pydantic-settings = "^2.3.4"
+pydantic-settings = "^2.7.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
@@ -48,7 +48,7 @@ optional = true
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
-pytest-asyncio = "^0.25.0"
+pytest-asyncio = "^0.25.1"
 freezegun = "^1.5.1"
 httpx = "^0.28.1"
 
