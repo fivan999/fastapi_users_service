@@ -35,7 +35,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.6"
-sqlalchemy = "^2.0.31"
+sqlalchemy = "^2.0.37"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.13.2"
 pydantic-settings = "^2.7.1"
@@ -48,7 +48,7 @@ optional = true
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
-pytest-asyncio = "^0.25.1"
+pytest-asyncio = "^0.25.2"
 freezegun = "^1.5.1"
 httpx = "^0.28.1"
 
