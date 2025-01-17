@@ -7,10 +7,10 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import ExpiredSignatureError, PyJWTError
 
 from src.config import settings
-from src.utils.enums import UserEnum
+from src.utils.enums import TokenEnum, TokenTypeEnum
 
 
-def create_access_or_refresh_token(sub: str, token_type: str) -> str:
+def create_access_or_refresh_token(sub: str, token_type: TokenTypeEnum) -> str:
     """
     Creating a jwt token with
 
@@ -21,14 +21,14 @@ def create_access_or_refresh_token(sub: str, token_type: str) -> str:
     Returns:
         str: jwt token
     """
-    data_to_encode = {'sub': sub, 'token_type': token_type}
+    data_to_encode = {'sub': sub, 'token_type': token_type.value}
     creation_time = datetime.datetime.now(datetime.timezone.utc)
     data_to_encode['iat'] = creation_time
-    if token_type == 'access_token':
+    if token_type == TokenTypeEnum.ACCESS:
         data_to_encode['exp'] = creation_time + datetime.timedelta(
             seconds=settings.ACCESS_TOKEN_EXPIRE_SECONDS
         )
-    elif token_type == 'refresh_token':
+    elif token_type == TokenTypeEnum.REFRESH:
         data_to_encode['exp'] = creation_time + datetime.timedelta(
             seconds=settings.REFRESH_TOKEN_EXPIRE_SECONDS
         )
@@ -52,8 +52,8 @@ def decode_jwt_token(token: str) -> dict:
 
 
 def get_validated_token_data(
-    token: str, expected_token_type: str
-) -> tuple[UserEnum, dict | None]:
+    token: str, expected_token_type: TokenTypeEnum
+) -> tuple[TokenEnum, dict | None]:
     """
     Validate jwt token and get payload
 
@@ -67,18 +67,18 @@ def get_validated_token_data(
     try:
         payload = decode_jwt_token(token)
     except ExpiredSignatureError:
-        return UserEnum.TOKEN_EXPIRED, None
+        return TokenEnum.TOKEN_EXPIRED, None
     except PyJWTError:
-        return UserEnum.INVALID_TOKEN, None
-    username = payload.get('sub')
+        return TokenEnum.INVALID_TOKEN, None
+    user_id = payload.get('sub')
     token_type = payload.get('token_type')
     if (
-        username is None
+        user_id is None
         or token_type is None
-        or token_type != expected_token_type
+        or token_type != expected_token_type.value
     ):
-        return UserEnum.INVALID_TOKEN, None
-    return UserEnum.TOKEN_IS_VALID, payload
+        return TokenEnum.INVALID_TOKEN, None
+    return TokenEnum.TOKEN_IS_VALID, payload
 
 
 def get_jwt_bearer_token(

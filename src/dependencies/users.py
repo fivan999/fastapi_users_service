@@ -2,55 +2,32 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from src.dependencies.db import DatabaseDep
 from src.dependencies.tokens import JWTTokenDep
-from src.repositories.users import UserRepository
-from src.schemes.users import UserFullScheme
-from src.use_cases.users import UserUseCase
-from src.utils.enums import UserEnum
+from src.utils.enums import TokenEnum, TokenTypeEnum
+from src.utils.tokens import get_validated_token_data
 
 
-async def get_user_repository(db: DatabaseDep) -> UserRepository:
-    return UserRepository(db)
-
-
-UserRepositoryDep = Annotated[UserRepository, Depends(get_user_repository)]
-
-
-async def get_user_use_case(user_repository: UserRepositoryDep) -> UserUseCase:
-    return UserUseCase(user_repository)
-
-
-UserUseCaseDep = Annotated[UserUseCase, Depends(get_user_use_case)]
-
-
-async def get_current_user_by_access_token(
-    token: JWTTokenDep, user_use_case: UserUseCaseDep
-) -> UserFullScheme:
+async def get_current_user_id_by_access_token(token: JWTTokenDep) -> int:
     """
-    Getting user's data from jwt token
+    Getting user's id from jwt token
 
     Args:
         token (JWTTokenDep): jwt token
-        user_use_case (UserUseCaseDep): user's use case
 
     Raises:
-        HTTPException: user does not exists
+        HTTPException: user's token is not valid
 
     Returns:
-        UserFullScheme: scheme with user's data
+        int: user's id
     """
-    result_status, result_user = await user_use_case.get_user_by_token(
-        token, 'access_token'
+    token_status, payload = get_validated_token_data(
+        token, TokenTypeEnum.ACCESS
     )
-    if result_status != UserEnum.USER_EXISTS:
+    if token_status != TokenEnum.TOKEN_IS_VALID:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=result_status.value,
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=token_status.value
         )
-    return result_user
+    return int(payload.get("sub"))
 
 
-CurrentUserDep = Annotated[
-    UserFullScheme, Depends(get_current_user_by_access_token)
-]
+UserIdDep = Annotated[int, Depends(get_current_user_id_by_access_token)]

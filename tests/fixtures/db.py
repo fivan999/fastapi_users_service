@@ -17,6 +17,8 @@ def db_engine() -> Engine:
         url=f"postgresql+psycopg2://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
         f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
         echo=True,
+        pool_size=100,
+        max_overflow=0,
     )
     recreate_db_tables(engine)
     return engine

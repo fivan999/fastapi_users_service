@@ -15,8 +15,12 @@ async def init_database() -> async_sessionmaker:
         async_sessionmaker: session factory
     """
     engine = create_async_engine(
-        url=f'postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}'
-        f'@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}',
+        url=f"postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
+        f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
         echo=True,
+        pool_size=100,
+        max_overflow=0,
     )
-    return async_sessionmaker(engine, expire_on_commit=False)
+    return async_sessionmaker(
+        autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
+    )

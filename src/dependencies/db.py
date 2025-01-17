@@ -34,7 +34,13 @@ async def get_session(
         Iterator[AsyncGenerator]: async session object
     """
     async with async_sessionmaker() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 DatabaseDep = Annotated[AsyncSession, Depends(get_session)]

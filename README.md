@@ -33,5 +33,6 @@ docker compose up
 ```
 ### Запуск тестов
 ```bash
-docker compose -f docker-compose-test.yml up
+docker compose -f docker-compose-test.yml up -d --build
+docker exec fastapi_app /bin/sh -c "pytest tests/ && exit"
 ```

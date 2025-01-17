@@ -1,12 +1,12 @@
 import datetime
 
 from sqlalchemy import or_, select, update
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.users import User
 from src.schemes.users import UserCreateScheme, UserFullScheme, UserShowScheme
-from src.utils.enums import UserEnum
+from src.utils.enums import AuthEnum, UserEnum
 
 
 class UserRepository:
@@ -37,18 +37,15 @@ class UserRepository:
             to_insert = user_data.__dict__
             to_insert['hashed_password'] = user_data.password
             del to_insert['password']
-            user_create_query = (
-                insert(User)
-                .values(**to_insert)
-                .on_conflict_do_nothing()
-                .returning(User)
-            )
-            new_user = await self.session.execute(user_create_query)
-            new_user = new_user.scalar()
-            await self.session.commit()
-        if new_user is None:
-            return UserEnum.USER_ALREADY_EXISTS, None
-        return UserEnum.USER_CREATED, UserShowScheme(**new_user.__dict__)
+            new_user = User(**to_insert)
+            self.session.add(new_user)
+            try:
+                await self.session.commit()
+                return UserEnum.USER_CREATED, UserShowScheme(
+                    **new_user.__dict__
+                )
+            except IntegrityError:
+                return UserEnum.USER_ALREADY_EXISTS, None
 
     async def get_user_by_username_or_email(
         self, login: str
@@ -73,14 +70,24 @@ class UserRepository:
             return UserEnum.USER_NOT_EXISTS, None
         return UserEnum.USER_EXISTS, UserFullScheme(**user_result.__dict__)
 
+    async def get_user_by_id(
+        self, user_id: int
+    ) -> tuple[UserEnum, UserFullScheme | None]:
+        user_get_query = select(User).where(User.id == user_id)
+        user_result = await self.session.execute(user_get_query)
+        user_result = user_result.scalar()
+        if user_result is None:
+            return UserEnum.USER_NOT_EXISTS, None
+        return UserEnum.USER_EXISTS, UserFullScheme(**user_result.__dict__)
+
     async def update_user_password(
-        self, username: str, new_password: str
+        self, user_id: int, new_password: str
     ) -> UserEnum:
         """
         Update user's password
 
         Args:
-            username (str)
+            user_id (int)
             new_password (str)
 
         Returns:
@@ -88,7 +95,7 @@ class UserRepository:
         """
         password_update_query = (
             update(User)
-            .where(User.username == username)
+            .where(User.id == user_id)
             .values(
                 hashed_password=new_password,
                 password_updated_at=datetime.datetime.now(
@@ -98,4 +105,4 @@ class UserRepository:
         )
         await self.session.execute(password_update_query)
         await self.session.commit()
-        return UserEnum.PASSWORD_CHANGED
+        return AuthEnum.PASSWORD_CHANGED

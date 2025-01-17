@@ -42,6 +42,7 @@ pydantic-settings = "^2.7.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+pydantic = {extras = ["email"], version = "^2.10.4"}
 
 [tool.poetry.group.test]
 optional = true
