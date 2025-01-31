@@ -43,6 +43,8 @@ asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic = {extras = ["email"], version = "^2.10.6"}
+dishka = "^1.4.2"
+uvicorn = "^0.34.0"
 
 [tool.poetry.group.test]
 optional = true

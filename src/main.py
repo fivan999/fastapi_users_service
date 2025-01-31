@@ -1,26 +1,14 @@
-from contextlib import asynccontextmanager
 from typing import Any, Dict
 
+from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 
-from src.db.base import init_database
+from src.dependencies import create_async_container
 from src.routes.users import user_router
-
-
-@asynccontextmanager
-async def lifespan_events(app: FastAPI):
-    """
-    Lifespan events of a fastapi application
-
-    Args:
-        app (FastAPI): Fastapi application
-    """
-    app.state.async_sessionmaker = await init_database()
-    yield
 
 
 def get_openapi_schema(app: FastAPI) -> Dict[str, Any]:
@@ -54,23 +42,6 @@ def get_openapi_schema(app: FastAPI) -> Dict[str, Any]:
     return app.openapi_schema
 
 
-def create_app() -> FastAPI:
-    """
-    Creating Fastapi application object
-
-    Returns:
-        FastAPI: Fastapi application
-    """
-    app = FastAPI(lifespan=lifespan_events)
-    app.include_router(user_router)
-    app.openapi_schema = get_openapi_schema(app)
-    return app
-
-
-app = create_app()
-
-
-@app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
@@ -81,3 +52,22 @@ async def validation_exception_handler(
         status_code=status.HTTP_400_BAD_REQUEST,
         content=jsonable_encoder(content),
     )
+
+
+def create_app() -> FastAPI:
+    """
+    Creating Fastapi application object
+
+    Returns:
+        FastAPI: Fastapi application
+    """
+    app = FastAPI(root_path="/api/v1")
+    app.include_router(user_router)
+    app.openapi_schema = get_openapi_schema(app)
+    container = create_async_container()
+    setup_dishka(container, app)
+    app.exception_handler(RequestValidationError)(validation_exception_handler)
+    return app
+
+
+app = create_app()

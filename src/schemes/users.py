@@ -61,3 +61,7 @@ class UserFullScheme(UserShowScheme):
 class UserLoginScheme(BaseModel):
     login: str
     password: str
+
+
+class UserIdScheme(BaseModel):
+    id: int

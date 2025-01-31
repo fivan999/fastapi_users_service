@@ -1,10 +1,8 @@
 from typing import Generator
 
 import pytest
-import pytest_asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.config import settings
@@ -32,18 +30,6 @@ def db_sessionmaker(
         db_engine, autoflush=False, autocommit=False, expire_on_commit=False
     )
     return db_sessionmaker
-
-
-@pytest_asyncio.fixture(scope='function')
-async def async_db_sessionmaker() -> async_sessionmaker:
-    engine = create_async_engine(
-        url=f"postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
-        f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
-        echo=True,
-    )
-    return async_sessionmaker(
-        bind=engine, expire_on_commit=False, autoflush=False, autocommit=False
-    )
 
 
 @pytest.fixture(scope='function')

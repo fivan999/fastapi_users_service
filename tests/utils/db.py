@@ -2,7 +2,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 
-from src.db.base import Base
+from src.models.base import Base
 
 
 def recreate_db_tables(engine: Engine) -> None:

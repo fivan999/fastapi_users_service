@@ -10,16 +10,20 @@ from src.schemes.users import (
     UserShowScheme,
 )
 from src.utils.enums import AuthEnum, TokenEnum, TokenTypeEnum, UserEnum
-from src.utils.password import get_hashed_password, verify_password
-from src.utils.tokens import (
-    create_access_or_refresh_token,
-    get_validated_token_data,
-)
+from src.utils.security.password import PasswordManager
+from src.utils.security.tokens import JwtTokenManager
 
 
 class UserUseCase:
-    def __init__(self, user_repository: UserRepository) -> None:
+    def __init__(
+        self,
+        user_repository: UserRepository,
+        password_manager: PasswordManager,
+        token_manager: JwtTokenManager,
+    ) -> None:
         self.user_repository = user_repository
+        self.password_manager = password_manager
+        self.token_manager = token_manager
 
     async def create_user(
         self, user_data: UserCreateScheme
@@ -35,7 +39,9 @@ class UserUseCase:
                 UserEnum, UserShowScheme | None
             ]: Enum with creating status and data
         """
-        user_data.password = get_hashed_password(user_data.password)
+        user_data.password = self.password_manager.hash_password(
+            user_data.password
+        )
         return await self.user_repository.create_user(user_data)
 
     async def get_user_by_username_or_email(
@@ -97,17 +103,17 @@ class UserUseCase:
         )
         if user_get_status != UserEnum.USER_EXISTS:
             return user_get_status, None
-        if not verify_password(
+        if not self.password_manager.verify_password(
             user_data.password, user_result_data.hashed_password
         ):
             return AuthEnum.WRONG_PASSWORD, None
 
         token_sub = str(user_result_data.id)
         return AuthEnum.SUCCESS_LOGIN, AccessAndRefreshToken(
-            access_token=create_access_or_refresh_token(
+            access_token=self.token_manager.create_access_or_refresh_token(
                 sub=token_sub, token_type=TokenTypeEnum.ACCESS
             ),
-            refresh_token=create_access_or_refresh_token(
+            refresh_token=self.token_manager.create_access_or_refresh_token(
                 sub=token_sub, token_type=TokenTypeEnum.REFRESH
             ),
         )
@@ -127,7 +133,9 @@ class UserUseCase:
                 UserEnum, UserFullScheme | None
             ]: Enum with getting status and user's data
         """
-        token_status, payload = get_validated_token_data(token, token_type)
+        token_status, payload = self.token_manager.get_validated_token_data(
+            token, token_type
+        )
         if token_status != TokenEnum.TOKEN_IS_VALID:
             return token_status, None
         result_status, result_user = await self.user_repository.get_user_by_id(
@@ -163,7 +171,7 @@ class UserUseCase:
         )
         if result_status != UserEnum.USER_EXISTS:
             return result_status, None
-        access_token = create_access_or_refresh_token(
+        access_token = self.token_manager.create_access_or_refresh_token(
             str(result_user.id), TokenTypeEnum.ACCESS
         )
         return TokenEnum.TOKEN_IS_VALID, AccessToken(access_token=access_token)
@@ -186,11 +194,12 @@ class UserUseCase:
         user_status, user_data = await self.get_user_by_id(user_id)
         if user_status != UserEnum.USER_EXISTS:
             return user_status
-        if not verify_password(
+        if not self.password_manager.verify_password(
             password_data.old_password, user_data.hashed_password
         ):
             return AuthEnum.WRONG_PASSWORD
         result_status = await self.user_repository.update_user_password(
-            user_id, get_hashed_password(password_data.password)
+            user_id,
+            self.password_manager.hash_password(password_data.password),
         )
         return result_status

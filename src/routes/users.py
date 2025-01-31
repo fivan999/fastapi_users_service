@@ -1,18 +1,25 @@
 from typing import Annotated
 
+from dishka import FromDishka
+from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter, Body, HTTPException, status
 
-from src.dependencies.db import DatabaseDep
-from src.dependencies.users import UserIdDep
 from src.schemes.errors import ErrorScheme
 from src.schemes.password import PasswordChangeScheme
 from src.schemes.tokens import AccessAndRefreshToken, AccessToken
-from src.schemes.users import UserCreateScheme, UserLoginScheme, UserShowScheme
+from src.schemes.users import (
+    UserCreateScheme,
+    UserIdScheme,
+    UserLoginScheme,
+    UserShowScheme,
+)
+from src.use_cases.users import UserUseCase
 from src.utils.enums import AuthEnum, TokenEnum, UserEnum
-from src.utils.user import get_user_use_case
 
 
-user_router = APIRouter(prefix='/users', tags=['Users'])
+user_router = APIRouter(
+    prefix='/users', tags=['Users'], route_class=DishkaRoute
+)
 
 
 @user_router.post(
@@ -24,9 +31,8 @@ user_router = APIRouter(prefix='/users', tags=['Users'])
     },
 )
 async def user_create(
-    user_data: UserCreateScheme, db: DatabaseDep
+    user_data: UserCreateScheme, user_use_case: FromDishka[UserUseCase]
 ) -> UserShowScheme:
-    user_use_case = await get_user_use_case(db)
     creation_status, user_result_data = await user_use_case.create_user(
         user_data
     )
@@ -47,9 +53,8 @@ async def user_create(
     },
 )
 async def user_login(
-    user_data: UserLoginScheme, db: DatabaseDep
+    user_data: UserLoginScheme, user_use_case: FromDishka[UserUseCase]
 ) -> AccessAndRefreshToken:
-    user_use_case = await get_user_use_case(db)
     result_status, result_data = (
         await user_use_case.get_access_and_refresh_token(user_data)
     )
@@ -71,9 +76,8 @@ async def user_login(
 )
 async def get_new_access_token(
     refresh_token: Annotated[str, Body(embed=True)],
-    db: DatabaseDep,
+    user_use_case: FromDishka[UserUseCase],
 ) -> AccessToken:
-    user_use_case = await get_user_use_case(db)
     result_status, token = (
         await user_use_case.get_new_access_token_by_refresh_token(
             refresh_token
@@ -98,10 +102,12 @@ async def get_new_access_token(
     },
 )
 async def get_user_profile(
-    user_id: UserIdDep, db: DatabaseDep
+    user_id_scheme: FromDishka[UserIdScheme],
+    user_use_case: FromDishka[UserUseCase],
 ) -> UserShowScheme:
-    user_use_case = await get_user_use_case(db)
-    user_status, user_data = await user_use_case.get_user_by_id(user_id)
+    user_status, user_data = await user_use_case.get_user_by_id(
+        user_id_scheme.id
+    )
     if user_status != UserEnum.USER_EXISTS:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return user_data
@@ -120,13 +126,12 @@ async def get_user_profile(
     },
 )
 async def change_user_password(
-    user_id: UserIdDep,
-    db: DatabaseDep,
+    user_id_scheme: FromDishka[UserIdScheme],
+    user_use_case: FromDishka[UserUseCase],
     password_data: PasswordChangeScheme,
 ) -> dict:
-    user_use_case = await get_user_use_case(db)
     result_status = await user_use_case.update_user_password(
-        user_id, password_data
+        user_id_scheme.id, password_data
     )
     if result_status != AuthEnum.PASSWORD_CHANGED:
         raise HTTPException(

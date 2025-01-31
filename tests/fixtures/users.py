@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from src.models.users import User
-from src.utils.password import get_hashed_password
+from src.utils.security.password import PasswordManager
 
 
 @pytest.fixture(scope='function')
@@ -12,7 +12,7 @@ def user1(db_session: Session) -> User:
     user_obj = User(
         username='user1',
         email='user1@example.com',
-        hashed_password=get_hashed_password('Paassword1'),
+        hashed_password=PasswordManager().hash_password('Paassword1'),
     )
     db_session.add(user_obj)
     db_session.commit()
