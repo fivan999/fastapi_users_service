@@ -1,12 +1,43 @@
-name: Build and publish a docker image
+name: Build and publish a docker image for the API
 
-on: push
+on:
+  push:
+    branches: [ "main" ]
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{github.repository}}
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:27.4.1
+        options: >-
+          --privileged
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and start containers
+      run: |
+        cp .env.example .env
+        docker compose -f docker-compose-test.yml up -d --build
+
+    - name: Run tests
+      run: docker exec fastapi_app /bin/sh -c "pytest tests/ && exit"
+
+    - name: Stop and remove containers
+      if: success() || failure()
+      run: docker compose down
+
   build-and-push-image:
+    needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: read
