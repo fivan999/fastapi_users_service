@@ -34,11 +34,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.115.8"
+fastapi = "^0.115.9"
 sqlalchemy = "^2.0.38"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.14.1"
-pydantic-settings = "^2.8.0"
+pydantic-settings = "^2.8.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
@@ -59,7 +59,7 @@ httpx = "^0.28.1"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-isort = "^6.0.0"
+isort = "^6.0.1"
 black = "^25.1.0"
 
 [build-system]
