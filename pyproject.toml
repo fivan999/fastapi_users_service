@@ -34,7 +34,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.115.9"
+fastapi = "^0.115.10"
 sqlalchemy = "^2.0.38"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.14.1"
