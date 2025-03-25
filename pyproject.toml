@@ -51,7 +51,7 @@ optional = true
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.5"
-pytest-asyncio = "^0.25.3"
+pytest-asyncio = "^0.26.0"
 freezegun = "^1.5.1"
 httpx = "^0.28.1"
 
