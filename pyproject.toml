@@ -35,15 +35,15 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.115.12"
-sqlalchemy = "^2.0.39"
+sqlalchemy = "^2.0.40"
 psycopg2-binary = "^2.9.9"
-alembic = "^1.15.1"
+alembic = "^1.15.2"
 pydantic-settings = "^2.8.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic = {extras = ["email"], version = "^2.10.6"}
-dishka = "^1.5.0"
+dishka = "^1.5.1"
 uvicorn = "^0.34.0"
 
 [tool.poetry.group.test]
@@ -51,7 +51,7 @@ optional = true
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.5"
-pytest-asyncio = "^0.25.3"
+pytest-asyncio = "^0.26.0"
 freezegun = "^1.5.1"
 httpx = "^0.28.1"
 
