@@ -42,7 +42,7 @@ pydantic-settings = "^2.8.1"
 asyncpg = "^0.30.0"
 pyjwt = "^2.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-pydantic = {extras = ["email"], version = "^2.11.1"}
+pydantic = {extras = ["email"], version = "^2.11.2"}
 dishka = "^1.5.2"
 uvicorn = "^0.34.0"
 
