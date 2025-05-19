@@ -244,14 +244,14 @@ markers = {main = "platform_system == \"Windows\"", dev = "platform_system == \"
 
 [[package]]
 name = "dishka"
-version = "1.5.3"
+version = "1.6.0"
 description = "Cute DI framework with scopes and agreeable API"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "dishka-1.5.3-py3-none-any.whl", hash = "sha256:838f2c21ad2f39424e326e836fb9dbef127d8e418593b9e9d5187c14479cd079"},
-    {file = "dishka-1.5.3.tar.gz", hash = "sha256:d40c0d879f6662e66de0c72458081fbcbdb55fee5823ca5820b714bc1c690c29"},
+    {file = "dishka-1.6.0-py3-none-any.whl", hash = "sha256:ab1aedee152ce7bb11cfd2673d7ce4001fe2b330d14e84535d7525a68430b2c2"},
+    {file = "dishka-1.6.0.tar.gz", hash = "sha256:f1fa5ec7e980d4f618d0c425d1bb81d8e9414894d8ec6553b197d2298774e12f"},
 ]
 
 [[package]]
@@ -1211,4 +1211,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "3713718f67fadc7e3ef70a479153de0713013e84db1e61cd57d76b4c4f568ce4"
+content-hash = "500914c098d1922d9a67bf228c4af088c7b591b4324218e101a9ebbfed52a292"
