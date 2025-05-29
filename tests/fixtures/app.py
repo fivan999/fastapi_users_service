@@ -13,7 +13,7 @@ def fastapi_app() -> FastAPI:
     return create_app()
 
 
-@pytest_asyncio.fixture(scope='function')
+@pytest_asyncio.fixture(scope="function")
 async def fastapi_test_client(
     db_clean, fastapi_app
 ) -> AsyncGenerator[AsyncClient, None]:
