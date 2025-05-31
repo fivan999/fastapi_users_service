@@ -17,15 +17,15 @@ git clone https://github.com/fivan999/fastapi_users_service
 - REFRESH_TOKEN_EXPIRE_SECONDS (время валидности refresh токена в секундах)
 ### Для разработки
 1. Установить [Python 3.12](https://www.python.org/downloads/)
-2. Установить [Poetry](https://python-poetry.org/docs/)
-3. Установить зависимости через Poetry
+2. Установить [uv](https://docs.astral.sh/uv/)
+3. Установить зависимости через uv
    ```bash
-   poetry install --with dev --with test
+   uv sync
    ```
 4. Установить [pre-commit](https://pre-commit.com/) хуки:
 
    ```bash
-   poetry run pre-commit install --install-hooks -t pre-commit -t commit-msg
+   uv tool install pre-commit --with pre-commit-uv
    ```
 ### Запустить проект
 ```bash
