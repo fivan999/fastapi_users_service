@@ -2,7 +2,9 @@ name: Build and publish a docker image for the API
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
@@ -37,6 +39,7 @@ jobs:
       run: docker compose down
 
   build-and-push-image:
+    if: github.event_name == 'push'
     needs: [build]
     runs-on: ubuntu-latest
     permissions:
