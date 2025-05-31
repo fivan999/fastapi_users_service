@@ -9,12 +9,12 @@ from src.config import settings
 from tests.utils.db import clear_db_tables, recreate_db_tables
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db_engine() -> Engine:
     engine = create_engine(
         url=f"postgresql+psycopg2://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}"
         f"@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}",
-        echo=True,
+        echo=False,
         pool_size=100,
         max_overflow=0,
     )
@@ -22,7 +22,7 @@ def db_engine() -> Engine:
     return engine
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db_sessionmaker(
     db_engine: Engine,
 ) -> sessionmaker:
@@ -32,7 +32,7 @@ def db_sessionmaker(
     return db_sessionmaker
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def db_session(
     db_sessionmaker: sessionmaker,
 ) -> Generator[Session, None, None]:
@@ -40,7 +40,7 @@ def db_session(
     yield session
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def db_clean(
     db_sessionmaker: sessionmaker,
 ) -> None:

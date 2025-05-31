@@ -2,15 +2,13 @@
 # Base Python image. Set shared environment variables.
 FROM python:3.12-alpine AS base
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_INSTALLER_MAX_WORKERS=10 \
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    VENV_PATH="/opt/pysetup/.venv" \
+    UV_PYTHON_DOWNLOADS=never \ 
+    UV_COMPILE_BYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 ###########################################################
 # Builder stage. Build dependencies.
@@ -19,35 +17,33 @@ RUN apk add --no-cache \
         build-base \
         curl \
         netcat-openbsd \
-        vim bash
+        bash
 
-# Install Poetry. Respects $POETRY_VERSION and $POETRY_HOME
-ENV POETRY_VERSION=1.8.3
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sS https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version ${POETRY_VERSION} && \
-    chmod a+x /opt/poetry/bin/poetry
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv ~/.local/bin/uv /usr/local/bin/ && \
+    uv --version
 
-# We copy our Python requirements here to cache them
-# and install only runtime deps using poetry
+# Create virtual environment and install dependencies
 WORKDIR $PYSETUP_PATH
-COPY ./poetry.lock ./pyproject.toml ./
-RUN poetry install --no-interaction
-
+RUN uv venv $VENV_PATH
+COPY ./uv.lock ./pyproject.toml ./
+RUN uv sync
 
 ###########################################################
-# Production stage. Copy only runtime deps that were installed in the Builder stage.
+# Production stage. Copy only runtime deps.
 FROM base AS production
 
 COPY --from=builder $VENV_PATH $VENV_PATH
 
 COPY --chmod=755 entrypoint.sh /
 
-# Create user with the name poetry
-RUN addgroup -g 1500 poetry && \
-    adduser -D -u 1500 -G poetry poetry
+# Create user with the name uvuser
+RUN addgroup -g 1500 uvuser && \
+    adduser -D -u 1500 -G uvuser uvuser
 
-COPY --chown=poetry:poetry . /code
-USER poetry
+COPY --chown=uvuser:uvuser . /code
+USER uvuser
 WORKDIR /code
 
 EXPOSE 8000
