@@ -26,12 +26,6 @@ class IUserUseCase(ABC):
         pass
 
     @abstractmethod
-    def get_user_by_token(
-        self, token: str, token_type: TokenTypeEnum
-    ) -> UserDTO:
-        pass
-
-    @abstractmethod
     def get_new_access_token_by_refresh_token(
         self, token: str
     ) -> AccessTokenDTO:

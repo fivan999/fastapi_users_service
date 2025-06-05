@@ -15,15 +15,9 @@ from src.infrastructure.db.users.orm import User
 
 class PostgresUserRepository(IUserRepository):
     def __init__(self, session: AsyncSession) -> None:
-        """
-        Initializing of user repository
-
-        Args:
-            session (AsyncSession): async db session
-        """
         self.session = session
 
-    async def create_user(self, user_data: UserCreateDTO) -> UserDTO:
+    async def add(self, user_data: UserCreateDTO) -> UserDTO:
         async with self.session.begin():
             to_insert = user_data.__dict__
             to_insert["hashed_password"] = user_data.password
@@ -31,7 +25,7 @@ class PostgresUserRepository(IUserRepository):
             new_user = User(**to_insert)
             self.session.add(new_user)
             try:
-                await self.session.commit()
+                await self.session.flush()
                 return UserDTO.model_validate(new_user, from_attributes=True)
             except IntegrityError as e:
                 raise UserAlreadyExistsException() from e
@@ -68,4 +62,4 @@ class PostgresUserRepository(IUserRepository):
             )
         )
         await self.session.execute(password_update_query)
-        await self.session.commit()
+        await self.session.flush()

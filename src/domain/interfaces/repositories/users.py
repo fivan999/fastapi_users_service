@@ -5,7 +5,7 @@ from src.domain.dtos.users import UserCreateDTO, UserDTO
 
 class IUserRepository(ABC):
     @abstractmethod
-    def create_user(self, user_data: UserCreateDTO) -> UserDTO:
+    def add(self, user_data: UserCreateDTO) -> UserDTO:
         pass
 
     @abstractmethod

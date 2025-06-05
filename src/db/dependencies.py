@@ -36,10 +36,3 @@ class DbProvider(Provider):
             bind=engine,
             expire_on_commit=False,
         )
-
-    @provide(scope=Scope.REQUEST)
-    async def get_session(
-        self, pool: async_sessionmaker[AsyncSession]
-    ) -> AsyncIterable[AsyncSession]:
-        async with pool() as session:
-            yield session

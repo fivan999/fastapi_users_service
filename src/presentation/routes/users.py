@@ -22,10 +22,7 @@ user_router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {"description": "Created user"},
-        400: {
-            "description": "Bad request",
-            # "model": HttpErrorDTO
-        },
+        400: {"description": "Bad request", "model": HttpErrorDTO},
     },
 )
 async def user_create(
@@ -39,10 +36,7 @@ async def user_create(
     status_code=status.HTTP_200_OK,
     responses={
         200: {"description": "Refresh and access token"},
-        401: {
-            "description": "Invalid user data",
-            # "model": HttpErrorDTO
-        },
+        401: {"description": "Invalid user data", "model": HttpErrorDTO},
     },
 )
 async def user_login(
@@ -56,10 +50,7 @@ async def user_login(
     status_code=status.HTTP_200_OK,
     responses={
         200: {"description": "New access token"},
-        403: {
-            "description": "Invalid refresh token",
-            # "model": HttpErrorDTO
-        },
+        403: {"description": "Invalid refresh token", "model": HttpErrorDTO},
     },
 )
 async def get_new_access_token(
@@ -76,18 +67,12 @@ async def get_new_access_token(
     status_code=status.HTTP_200_OK,
     responses={
         200: {"description": "User data"},
-        401: {
-            "description": "Unauthorized",
-            # "model": HttpErrorDTO
-        },
+        401: {"description": "Unauthorized", "model": HttpErrorDTO},
         403: {
             "description": "Credentials not provided",
-            # "model": HttpErrorDTO,
+            "model": HttpErrorDTO,
         },
-        404: {
-            "description": "User not found",
-            # "model": HttpErrorDTO
-        },
+        404: {"description": "User not found", "model": HttpErrorDTO},
     },
 )
 async def get_user_profile(
@@ -102,13 +87,10 @@ async def get_user_profile(
     status_code=status.HTTP_200_OK,
     responses={
         200: {"description": "Successful"},
-        401: {
-            "description": "Unauthorized",
-            # "model": HttpErrorDTO
-        },
+        401: {"description": "Unauthorized", "model": HttpErrorDTO},
         400: {
             "description": "Invalid old or new password",
-            # "model": HttpErrorDTO,
+            "model": HttpErrorDTO,
         },
     },
 )
