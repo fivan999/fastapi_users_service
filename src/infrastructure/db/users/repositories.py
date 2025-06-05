@@ -18,17 +18,16 @@ class PostgresUserRepository(IUserRepository):
         self.session = session
 
     async def add(self, user_data: UserCreateDTO) -> UserDTO:
-        async with self.session.begin():
-            to_insert = user_data.__dict__
-            to_insert["hashed_password"] = user_data.password
-            del to_insert["password"]
-            new_user = User(**to_insert)
-            self.session.add(new_user)
-            try:
-                await self.session.flush()
-                return UserDTO.model_validate(new_user, from_attributes=True)
-            except IntegrityError as e:
-                raise UserAlreadyExistsException() from e
+        to_insert = user_data.__dict__
+        to_insert["hashed_password"] = user_data.password
+        del to_insert["password"]
+        new_user = User(**to_insert)
+        self.session.add(new_user)
+        try:
+            await self.session.flush()
+            return UserDTO.model_validate(new_user, from_attributes=True)
+        except IntegrityError as e:
+            raise UserAlreadyExistsException() from e
 
     async def get_user_by_username_or_email(self, login: str) -> UserDTO:
         user_get_query = select(User).where(
